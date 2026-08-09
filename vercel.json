@@ -1,1 +1,5 @@
-{\n  \"buildCommand\": \"npm run build\",\n  \"devCommand\": \"next dev\",\n  \"installCommand\": \"npm ci\"\n}\n
+{
+  "buildCommand": "npm run build",
+  "devCommand": "next dev",
+  "installCommand": "npm ci"
+}
