@@ -1,0 +1,1 @@
+{\n  \"buildCommand\": \"npm run build\",\n  \"devCommand\": \"next dev\",\n  \"installCommand\": \"npm ci\"\n}\n
