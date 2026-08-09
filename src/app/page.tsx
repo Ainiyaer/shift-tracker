@@ -1,12 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Calendar, Plus, Trash2, Download, ChevronLeft, ChevronRight } from 'lucide-react'
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, parse, addMonths, subMonths } from 'date-fns'
+import { Calendar, Trash2, Download, ChevronLeft, ChevronRight } from 'lucide-react'
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, parse, addMonths, subMonths } from 'date-fns'
 
 interface ShiftEntry {
   date: string
-  type: 'regular' | 'overtime' | 'sick' | 'off' | 'custom'
+  type: 'regular' | 'overtime' | 'sick' | 'off'
   hours: number
 }
 
@@ -32,7 +32,11 @@ export default function Home() {
   useEffect(() => {
     const saved = localStorage.getItem('shiftTrackerData')
     if (saved) {
-      setShifts(JSON.parse(saved))
+      try {
+        setShifts(JSON.parse(saved))
+      } catch (e) {
+        console.error('Failed to parse shifts', e)
+      }
     }
     setLoaded(true)
   }, [])
@@ -52,13 +56,12 @@ export default function Home() {
     else if (type === 'overtime') hours = customHours || parseFloat(overtimeHours)
     else if (type === 'sick') hours = 0
     else if (type === 'off') hours = 0
-    else if (type === 'custom') hours = customHours || 0
 
     setShifts((prev) => ({
       ...prev,
       [selectedDate]: {
         date: selectedDate,
-        type: type as any,
+        type: type as 'regular' | 'overtime' | 'sick' | 'off',
         hours,
       },
     }))
@@ -86,6 +89,7 @@ export default function Home() {
     a.href = url
     a.download = `shifts-${monthStr}.csv`
     a.click()
+    URL.revokeObjectURL(url)
   }
 
   const monthShifts = Object.values(shifts).filter((s) => {
@@ -249,9 +253,7 @@ export default function Home() {
                     className="flex items-center justify-between p-3 bg-slate-800 rounded-lg border border-slate-700"
                   >
                     <div>
-                      <p className="font-semibold">{
-                        format(parse(shift.date, 'yyyy-MM-dd', new Date()), 'MMM dd, yyyy')
-                      }</p>
+                      <p className="font-semibold">{format(parse(shift.date, 'yyyy-MM-dd', new Date()), 'MMM dd, yyyy')}</p>
                       <p className="text-sm text-gray-400">
                         {shift.type.charAt(0).toUpperCase() + shift.type.slice(1)} - {shift.hours}h
                       </p>
